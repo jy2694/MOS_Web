@@ -1,5 +1,12 @@
 package kr.mos1981.mosweb.dto;
 
+import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
+
+@Data
 public class WriteArticleDTO {
-    //게시물 작성 시 데이터를 담을 DTO
+    private String title;
+    private String context;
+    private String createBy;
+    private MultipartFile[] files;
 }

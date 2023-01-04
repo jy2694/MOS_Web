@@ -1,5 +1,7 @@
 package kr.mos1981.mosweb.api;
 
+import kr.mos1981.mosweb.dto.SignInDTO;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,8 +15,7 @@ import java.util.Map;
 public class WKUAPI {
 
     /***
-     * @param userid / 웹정보서비스 아이디
-     * @param userpw / 웹정보서비스 비밀번호
+     * @param dto / 웹정보서비스 아이디 비밀번호 객체
      * @return String Array [학번, 입학일자, 성명, 대학, 학과, 학적, 과정]
      *
      * 만약 반환된 배열 내부의 값들이 모두 null 인 경우
@@ -23,8 +24,8 @@ public class WKUAPI {
      * 
      * @throws IOException
      */
-    public static String[] getRegistrationInformation(String userid, String userpw) throws IOException {
-        String cookies = getWKUCookies(userid, userpw);
+    public static String[] getRegistrationInformation(SignInDTO dto) throws IOException {
+        String cookies = getWKUCookies(dto.getUserId(), dto.getUserPw());
         return getRegistrationInformation(cookies);
     }
     public static String[] getRegistrationInformation(String cookies) throws IOException  {

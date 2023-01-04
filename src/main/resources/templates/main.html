@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div th:if="${session[0] != null}" th:text="${session[0]}"></div>
+    <div th:if="${session[1] != null}" th:text="${session[1]}"></div>
+    <div th:if="${session[2] != null}" th:text="${session[2]}"></div>
+    <div th:if="${session[3] != null}" th:text="${session[3]}"></div>
+    <div th:if="${session[4] != null}" th:text="${session[4]}"></div>
+    <div th:if="${session[5] != null}" th:text="${session[5]}"></div>
+    <div th:if="${session[6] != null}" th:text="${session[6]}"></div>
+    <div th:if="${session[0] == null}">로그인 필요.</div>
+</body>
+</html>
