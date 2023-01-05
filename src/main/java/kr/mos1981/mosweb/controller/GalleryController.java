@@ -34,6 +34,11 @@ public class GalleryController {
         return ResponseEntity.ok().body(galleryArticle);
     }
 
+//    @PutMapping("/gallery")
+//    public ResponseEntity<Object> modifyGalleryArticle(HttpServletRequest request, WriteArticleDTO dto){
+//TODO - Modify
+//    }
+
     @PostMapping("/gallery")
     public ResponseEntity<Object> writeGalleryArticle(HttpServletRequest request, WriteArticleDTO dto){
         String[] data = (String[]) sessionManager.getSession(request);

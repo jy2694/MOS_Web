@@ -6,6 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class SubmitAssignmentDTO {
     private Long assignId;
-    private String createAt;
-    private MultipartFile[] files;
+    private String createBy;
+    private MultipartFile file;
 }

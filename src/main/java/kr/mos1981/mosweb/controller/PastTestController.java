@@ -32,6 +32,11 @@ public class PastTestController {
         return ResponseEntity.ok().body(article);
     }
 
+//    @PutMapping("/pasttest")
+//    public ResponseEntity<Object> modifyArticle(HttpServletRequest request, WriteArticleDTO dto){
+//TODO - Modify
+//    }
+
     @PostMapping("/pasttest")
     public ResponseEntity<Object> writeArticle(HttpServletRequest request, WriteArticleDTO dto){
         String[] data = (String[]) sessionManager.getSession(request);

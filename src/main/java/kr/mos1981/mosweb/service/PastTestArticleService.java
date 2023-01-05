@@ -1,6 +1,7 @@
 package kr.mos1981.mosweb.service;
 
 import kr.mos1981.mosweb.dto.WriteArticleDTO;
+import kr.mos1981.mosweb.entity.AttachmentFile;
 import kr.mos1981.mosweb.entity.PastTestArticle;
 import kr.mos1981.mosweb.repository.PastTestArticleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,12 @@ import java.util.Optional;
 public class PastTestArticleService {
 
     private PastTestArticleRepository pastTestArticleRepository;
+    private AttachmentFileService attachmentFileService;
     @Autowired
-    public PastTestArticleService(PastTestArticleRepository pastTestArticleRepository){
+    public PastTestArticleService(PastTestArticleRepository pastTestArticleRepository,
+                                  AttachmentFileService attachmentFileService){
         this.pastTestArticleRepository = pastTestArticleRepository;
+        this.attachmentFileService = attachmentFileService;
     }
 
     public List<PastTestArticle> findAll(){
@@ -37,6 +41,9 @@ public class PastTestArticleService {
     public void deleteArticle(Long id){
         PastTestArticle article = findById(id);
         if(article == null) return;
+        List<AttachmentFile> files = attachmentFileService.getAttachmentFiles("pasttest", id);
+        for(AttachmentFile file : files)
+            attachmentFileService.deleteAttachment(file.getId());
         pastTestArticleRepository.delete(article);
     }
 }
