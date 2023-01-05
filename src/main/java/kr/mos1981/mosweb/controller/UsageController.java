@@ -33,6 +33,11 @@ public class UsageController {
         return ResponseEntity.ok().body(article);
     }
 
+//    @PutMapping("/usage")
+//    public ResponseEntity<Object> modifyArticle(HttpServletRequest request, WriteArticleDTO dto){
+//TODO - Modify
+//    }
+
     @PostMapping("/usage")
     public ResponseEntity<Object> writeArticle(HttpServletRequest request, WriteArticleDTO dto){
         String[] data = (String[]) sessionManager.getSession(request);

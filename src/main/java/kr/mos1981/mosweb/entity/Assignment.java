@@ -1,6 +1,7 @@
 package kr.mos1981.mosweb.entity;
 
 import jakarta.persistence.*;
+import kr.mos1981.mosweb.dto.CreateAssignmentDTO;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -39,10 +40,10 @@ public class Assignment {
         this.context = context;
     }
 
-    public Assignment(LocalDateTime deadLine, String title, String context){
+    public Assignment(CreateAssignmentDTO dto){
         this.createAt = LocalDateTime.now();
-        this.deadLine = deadLine;
-        this.title = title;
-        this.context = context;
+        this.deadLine = dto.getDeadLine();
+        this.title = dto.getTitle();
+        this.context = dto.getContext();
     }
 }

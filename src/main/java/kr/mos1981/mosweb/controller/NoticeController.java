@@ -33,6 +33,11 @@ public class NoticeController {
         return ResponseEntity.ok().body(article);
     }
 
+//    @PutMapping("/notice")
+//    public ResponseEntity<Object> modifyArticle(HttpServletRequest request, WriteArticleDTO dto){
+//TODO - Modify
+//    }
+
     @PostMapping("/notice")
     public ResponseEntity<Object> writeArticle(HttpServletRequest request, WriteArticleDTO dto){
         String[] data = (String[]) sessionManager.getSession(request);

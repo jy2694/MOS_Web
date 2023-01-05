@@ -1,6 +1,7 @@
 package kr.mos1981.mosweb.service;
 
 import kr.mos1981.mosweb.dto.WriteArticleDTO;
+import kr.mos1981.mosweb.entity.AttachmentFile;
 import kr.mos1981.mosweb.entity.UsageArticle;
 import kr.mos1981.mosweb.repository.UsageArticleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,13 @@ import java.util.Optional;
 public class UsageArticleService {
 
     private UsageArticleRepository usageArticleRepository;
+    private AttachmentFileService attachmentFileService;
 
     @Autowired
-    public UsageArticleService(UsageArticleRepository usageArticleRepository){
+    public UsageArticleService(UsageArticleRepository usageArticleRepository,
+                               AttachmentFileService attachmentFileService){
         this.usageArticleRepository = usageArticleRepository;
+        this.attachmentFileService = attachmentFileService;
     }
 
     public List<UsageArticle> findAll(){
@@ -38,6 +42,9 @@ public class UsageArticleService {
     public void deleteArticle(Long id){
         UsageArticle article = findById(id);
         if(article == null) return;
+        List<AttachmentFile> files = attachmentFileService.getAttachmentFiles("usage", id);
+        for(AttachmentFile file : files)
+            attachmentFileService.deleteAttachment(file.getId());
         usageArticleRepository.delete(article);
     }
 }
