@@ -24,7 +24,6 @@ public class MainController {
         String[] data = (String[]) sessionManager.getSession(request);
         if(data == null)
             return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("ERROR : 로그인이 필요합니다.");
-
         return ResponseEntity.ok().body(data);
     }
 }

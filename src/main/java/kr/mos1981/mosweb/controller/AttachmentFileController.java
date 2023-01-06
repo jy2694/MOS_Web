@@ -3,6 +3,7 @@ package kr.mos1981.mosweb.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import kr.mos1981.mosweb.entity.*;
 import kr.mos1981.mosweb.service.*;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -26,18 +27,21 @@ public class AttachmentFileController {
     private NoticeArticleService noticeArticleService;
     private PastTestArticleService pastTestArticleService;
     private UsageArticleService usageArticleService;
+    private AssignmentService assignmentService;
 
     @Autowired
     public AttachmentFileController(AttachmentFileService attachmentFileService,
                                     GalleryArticleService galleryArticleService,
                                     NoticeArticleService noticeArticleService,
                                     PastTestArticleService pastTestArticleService,
-                                    UsageArticleService usageArticleService){
+                                    UsageArticleService usageArticleService,
+                                    AssignmentService assignmentService){
         this.attachmentFileService = attachmentFileService;
         this.galleryArticleService = galleryArticleService;
         this.noticeArticleService = noticeArticleService;
         this.pastTestArticleService = pastTestArticleService;
         this.usageArticleService = usageArticleService;
+        this.assignmentService = assignmentService;
     }
 
     @GetMapping("/attached-files")
@@ -58,6 +62,48 @@ public class AttachmentFileController {
             case "usage":
                 UsageArticle usageArticle = usageArticleService.findById(id);
                 if(usageArticle == null) return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 게시글이 존재하지 않습니다.");
+                break;
+            case "assignment":
+                Assignment assignment = assignmentService.findById(id);
+                if(assignment == null) return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 과제가 존재하지 않습니다.");
+                break;
+            case "submit":
+                AssignmentSubmit submit = assignmentService.findSubmitById(id);
+                if(submit == null) return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 과제 제출이 존재하지 않습니다.");
+                break;
+            default:
+                return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 게시글이 존재하지 않습니다.");
+        }
+        List<AttachmentFile> files = attachmentFileService.getAttachmentFiles(category, id);
+        return ResponseEntity.ok().body(files);
+    }
+
+    @GetMapping("/attached-urls")
+    public ResponseEntity<Object> getAttachedFileUrls(@RequestParam String category, @RequestParam Long id){
+        switch(category){
+            case "gallery":
+                GalleryArticle galleryArticle = galleryArticleService.findById(id);
+                if(galleryArticle == null) return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 게시글이 존재하지 않습니다.");
+                break;
+            case "notice":
+                NoticeArticle noticeArticle = noticeArticleService.findById(id);
+                if(noticeArticle == null) return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 게시글이 존재하지 않습니다.");
+                break;
+            case "pasttest":
+                PastTestArticle pastTestArticle = pastTestArticleService.findById(id);
+                if(pastTestArticle == null) return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 게시글이 존재하지 않습니다.");
+                break;
+            case "usage":
+                UsageArticle usageArticle = usageArticleService.findById(id);
+                if(usageArticle == null) return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 게시글이 존재하지 않습니다.");
+                break;
+            case "assignment":
+                Assignment assignment = assignmentService.findById(id);
+                if(assignment == null) return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 과제가 존재하지 않습니다.");
+                break;
+            case "submit":
+                AssignmentSubmit submit = assignmentService.findSubmitById(id);
+                if(submit == null) return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 과제 제출이 존재하지 않습니다.");
                 break;
             default:
                 return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 게시글이 존재하지 않습니다.");

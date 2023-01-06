@@ -8,6 +8,7 @@ import kr.mos1981.mosweb.entity.Assignment;
 import kr.mos1981.mosweb.entity.AssignmentSubmit;
 import kr.mos1981.mosweb.entity.AttachmentFile;
 import kr.mos1981.mosweb.service.AssignmentService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -43,13 +44,20 @@ public class AssignmentController {
         String[] data = (String[]) sessionManager.getSession(request);
         if(data == null) return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("ERROR : 로그인이 필요합니다.");
         Assignment assignment = assignmentService.createAssignment(dto);
+        if(assignment == null) return ResponseEntity.internalServerError().body("ERROR : 파일 업로드 중 오류가 발생하였습니다.");
         return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(assignment);
     }
 
-//    @PutMapping("/assignment")
-//    public ResponseEntity<Object> modifyAssignment(HttpServletRequest request, CreateAssignmentDTO dto){
-//TODO - Modify
-//    }
+    @PutMapping("/assignment")
+    public ResponseEntity<Object> modifyAssignment(HttpServletRequest request, CreateAssignmentDTO dto, Long id, String[] idList){
+        String[] data = (String[]) sessionManager.getSession(request);
+        if(data == null) return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("ERROR : 로그인이 필요합니다.");
+        Assignment assignment = assignmentService.findById(id);
+        if(assignment == null) return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 과제가 존재하지 않습니다.");
+        assignment = assignmentService.modifyAssignment(dto, id, idList);
+        if(assignment == null) return ResponseEntity.internalServerError().body("ERROR : 파일 업로드 중 오류가 발생하였습니다.");
+        return ResponseEntity.ok().body(assignment);
+    }
 
     @DeleteMapping("/assignment")
     public ResponseEntity<Object> deleteAssignment(HttpServletRequest request, Long id){
@@ -73,7 +81,7 @@ public class AssignmentController {
         return ResponseEntity.ok().body(submit);
     }
 
-    @GetMapping("/assignment/show")
+    @GetMapping("/assignment/submit")
     public ResponseEntity<Object> getAssignmentSubmit(HttpServletRequest request, Long assignId, @RequestParam(required = false) String createBy){
         String[] data = (String[]) sessionManager.getSession(request);
         if(data == null) return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("ERROR : 로그인이 필요합니다.");
@@ -83,20 +91,5 @@ public class AssignmentController {
         AssignmentSubmit assignmentSubmit = assignmentService.findSubmitByAssignIdAndCreateBy(assignId, createBy);
         if(assignmentSubmit == null) return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 제출한 과제가 없습니다.");
         return ResponseEntity.ok().body(assignmentSubmit);
-    }
-
-    @GetMapping("/assignment/attached")
-    public ResponseEntity<Object> getAssignmentSubmitAttachmentFile(HttpServletRequest request, Long assignId, @RequestParam(required = false) String createBy){
-        String[] data = (String[]) sessionManager.getSession(request);
-        if(data == null) return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("ERROR : 로그인이 필요합니다.");
-        Assignment assignment = assignmentService.findById(assignId);
-        if(assignment == null) return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 과제가 존재하지 않습니다.");
-        if(createBy == null) createBy = data[2] + "(" + data[0] + ")";
-        AssignmentSubmit assignmentSubmit = assignmentService.findSubmitByAssignIdAndCreateBy(assignId, createBy);
-        if(assignmentSubmit == null) return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 제출한 과제가 없습니다.");
-        List<AttachmentFile> files = assignmentService.findAttachmentFileBySubmit(assignmentSubmit);
-        List<String> fileUrls = new ArrayList<>();
-        for(AttachmentFile file : files) fileUrls.add("/files/" + file.getOriginPath());
-        return ResponseEntity.ok().body(fileUrls);
     }
 }
