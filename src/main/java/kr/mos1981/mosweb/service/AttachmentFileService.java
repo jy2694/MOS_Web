@@ -7,12 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AttachmentFileService {
@@ -25,6 +32,32 @@ public class AttachmentFileService {
                                  StorageProperties storageProperties){
         this.attachmentFileRepository = attachmentFileRepository;
         this.storageProperties = storageProperties;
+    }
+
+    public AttachmentFile saveAttachmentFile(MultipartFile file, String category, Long boardId){
+        if(file.isEmpty()) return null;
+        String fileName = file.getOriginalFilename();
+        String fileExtension = fileName.substring(fileName.lastIndexOf("."));
+        String originPath = UUID.randomUUID().toString().replaceAll("-","") + fileExtension;
+
+        Path destinationFile = Paths.get(storageProperties.getLocation()).resolve(
+                        Paths.get(originPath))
+                .normalize().toAbsolutePath();
+        try (InputStream inputStream = file.getInputStream()) {
+            Files.copy(inputStream, destinationFile,
+                    StandardCopyOption.REPLACE_EXISTING);
+        } catch(IOException e){
+            return null;
+        }
+        AttachmentFile attachmentFile = new AttachmentFile(
+                category,
+                boardId,
+                originPath,
+                fileName,
+                fileExtension
+        );
+        attachmentFileRepository.save(attachmentFile);
+        return attachmentFile;
     }
 
     public List<AttachmentFile> getAttachmentFiles(String category, Long id){
@@ -58,5 +91,11 @@ public class AttachmentFileService {
         } catch (MalformedURLException e) {
             return null;
         }
+    }
+
+    public boolean isContainedAttachmentFile(String[] idList, AttachmentFile file){
+        return Arrays.stream(idList)
+                .filter(stringId -> Integer.parseInt(stringId) == file.getId())
+                .findAny().isPresent();
     }
 }
