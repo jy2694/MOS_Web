@@ -1,6 +1,7 @@
 package kr.mos1981.mosweb.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import kr.mos1981.mosweb.api.ResponseEntityEnum;
 import kr.mos1981.mosweb.api.SessionManager;
 import kr.mos1981.mosweb.entity.Member;
 import kr.mos1981.mosweb.service.MemberService;
@@ -14,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class MainController {
     //메인 페이지 컨트롤러
 
-    private SessionManager sessionManager;
-    private MemberService memberService;
+    private final SessionManager sessionManager;
+    private final MemberService memberService;
 
     @Autowired
     public MainController(SessionManager sessionManager,
@@ -28,16 +29,16 @@ public class MainController {
     public ResponseEntity<Object> getPersonalInformation(HttpServletRequest request){
         String[] data = (String[]) sessionManager.getSession(request);
         if(data == null)
-            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("ERROR : 로그인이 필요합니다.");
+            return ResponseEntityEnum.LOGIN_REQUIRED.getMsg();
         return ResponseEntity.ok().body(data);
     }
 
     @GetMapping("/memberInfo")
     public ResponseEntity<Object> getMemberInfo(HttpServletRequest request, String studentId){
         String[] data = (String[]) sessionManager.getSession(request);
-        if(data == null) return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("ERROR : 로그인이 필요합니다.");
+        if(data == null) return ResponseEntityEnum.LOGIN_REQUIRED.getMsg();
         int permission = memberService.getPermissionLevel(data[0], data[2]);
-        if(permission != 0) return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("ERROR : 권한이 부족합니다.");
+        if(permission != 0) return ResponseEntityEnum.NO_PERMISSION.getMsg();
         Member member = memberService.findById(studentId);
         if(member == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok().body(member);
@@ -46,9 +47,9 @@ public class MainController {
     @GetMapping("/memberProfile")
     public ResponseEntity<Object> getMemberProfile(HttpServletRequest request, String studentId){
         String[] data = (String[]) sessionManager.getSession(request);
-        if(data == null) return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("ERROR : 로그인이 필요합니다.");
+        if(data == null) return ResponseEntityEnum.LOGIN_REQUIRED.getMsg();
         int permission = memberService.getPermissionLevel(data[0], data[2]);
-        if(permission != 0) return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("ERROR : 권한이 부족합니다.");
+        if(permission != 0) return ResponseEntityEnum.NO_PERMISSION.getMsg();
         Member member = memberService.findById(studentId);
         if(member == null) return ResponseEntity.notFound().build();
         return ResponseEntity.status(HttpStatusCode.valueOf(302)).body(memberService.getProfilePhoto(studentId));

@@ -14,15 +14,12 @@ import java.util.Map;
 
 public class WKUAPI {
 
-    /***
-     * @param dto / 웹정보서비스 아이디 비밀번호 객체
-     * @return String Array [학번, 입학일자, 성명, 대학, 학과, 학적, 과정]
-     *
+    private static final String COMMUNICATION_CHARSET = "EUC-KR";
+
+    /*
      * 만약 반환된 배열 내부의 값들이 모두 null 인 경우
      * 아이디 비밀번호가 올바르지 않거나 본인확인이 되지 않은 계정임
      * 후자의 경우 확률이 낮으므로 전자로 가정하고 처리함.
-     * 
-     * @throws IOException
      */
     public static String[] getRegistrationInformation(SignInDTO dto) throws IOException {
         String cookies = getWKUCookies(dto.getUserId(), dto.getUserPw());
@@ -34,7 +31,7 @@ public class WKUAPI {
         con.setRequestMethod("POST");
         con.setRequestProperty("Cookie", cookies);
         InputStream is = con.getInputStream();
-        BufferedReader in = new BufferedReader(new InputStreamReader(is, "euc-kr"));
+        BufferedReader in = new BufferedReader(new InputStreamReader(is, COMMUNICATION_CHARSET));
         String line;
         String[] information = new String[7];
         int i = 0;
@@ -58,39 +55,38 @@ public class WKUAPI {
         StringBuilder postData = new StringBuilder();
         for(Map.Entry<String,Object> param : params.entrySet()) {
             if(postData.length() != 0) postData.append('&');
-            postData.append(URLEncoder.encode(param.getKey(), "EUC-KR"));
+            postData.append(URLEncoder.encode(param.getKey(), COMMUNICATION_CHARSET));
             postData.append('=');
-            postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "EUC-KR"));
+            postData.append(URLEncoder.encode(String.valueOf(param.getValue()), COMMUNICATION_CHARSET));
         }
-        byte[] postDataBytes = postData.toString().getBytes("EUC-KR");
 
-        HashMap<String, String> cookiemap = new HashMap<String, String>();
+        HashMap<String, String> cookieMap = new HashMap<>();
 
         CookieManager manager = new CookieManager();
         manager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
         CookieHandler.setDefault(manager);
 
-        URL url = new URL("https://auth.wku.ac.kr/Cert/User/Login/login.jsp?"+postData.toString());
+        URL url = new URL("https://auth.wku.ac.kr/Cert/User/Login/login.jsp?"+postData);
         URLConnection connection = url.openConnection();
-        Object obj = connection.getContent();
-        connection = url.openConnection();
+        connection.getContent();
+        url.openConnection();
 
         url = new URL("https://intra.wku.ac.kr/SWupis/V005/loginReturn.jsp");
         connection = url.openConnection();
-        obj = connection.getContent();
-        connection = url.openConnection();
+        connection.getContent();
+        url.openConnection();
         CookieStore cookieJar = manager.getCookieStore();
         List<HttpCookie> cookies = cookieJar.getCookies();
         for (HttpCookie cookie: cookies) {
-            String[] another_data = cookie.toString().split(";");
-            for(String rdata : another_data) {
+            String[] anotherData = cookie.toString().split(";");
+            for(String rdata : anotherData) {
                 String[] data = rdata.split("=");
-                cookiemap.put(data[0], data[1]);
+                cookieMap.put(data[0], data[1]);
             }
         }
         String cookie = "";
-        for(String key : cookiemap.keySet()) {
-            cookie += String.format("%s=%s;", key, cookiemap.get(key));
+        for(String key : cookieMap.keySet()) {
+            cookie += String.format("%s=%s;", key, cookieMap.get(key));
         }
         return cookie;
     }

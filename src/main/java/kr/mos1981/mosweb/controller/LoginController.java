@@ -2,6 +2,7 @@ package kr.mos1981.mosweb.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kr.mos1981.mosweb.api.ResponseEntityEnum;
 import kr.mos1981.mosweb.api.SessionManager;
 import kr.mos1981.mosweb.api.WKUAPI;
 import kr.mos1981.mosweb.dto.SignInDTO;
@@ -18,8 +19,8 @@ import java.io.IOException;
 public class LoginController {
     //로그인 페이지 컨트롤러
 
-    private SessionManager sessionManager;
-    private MemberService memberService;
+    private final SessionManager sessionManager;
+    private final MemberService memberService;
 
     @Autowired
     public LoginController(SessionManager sessionManager,
@@ -28,21 +29,21 @@ public class LoginController {
         this.memberService = memberService;
     }
 
-    @PostMapping("/signin")
+    @PostMapping("/signIn")
     public ResponseEntity<Object> processSignIn(HttpServletResponse response,HttpServletRequest request, SignInDTO dto) throws IOException {
-        if(sessionManager.getSession(request) != null) return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("ERROR : 이미 로그인 상태입니다.");
+        if(sessionManager.getSession(request) != null) return ResponseEntityEnum.ALREADY_LOGIN.getMsg();
         String[] data = WKUAPI.getRegistrationInformation(dto);
-        if(data[0] == null) return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("ERROR : 회원정보가 일치하지 않습니다.");
+        if(data[0] == null) return ResponseEntityEnum.INCORRECT_USER_INFO.getMsg();
         int permission = memberService.getPermissionLevel(data[0], data[2]);
-        if(permission == 2) return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("ERROR : MOS 회원이 아닙니다.");
+        if(permission == 2) return ResponseEntityEnum.NOT_MEMBER.getMsg();
         sessionManager.createSession(data, response);
         return ResponseEntity.ok().body(data);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> processLogout(HttpServletRequest request){
+    public ResponseEntity<Object> processLogout(HttpServletRequest request){
         String[] data = (String[])sessionManager.getSession(request);
-        if(data == null) return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("ERROR : 로그인이 필요합니다.");
+        if(data == null) return ResponseEntityEnum.LOGIN_REQUIRED.getMsg();
         sessionManager.expire(request);
         return ResponseEntity.noContent().build();
     }

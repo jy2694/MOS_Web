@@ -15,7 +15,7 @@ public class SessionManager {
 
     private static final String SESSION_COOKIE_NAME = "mosToken";
 
-    private Map<String, Object> sessionStore = new ConcurrentHashMap<>();
+    private final Map<String, Object> sessionStore = new ConcurrentHashMap<>();
 
     /**
      * 세션 생성
@@ -35,7 +35,7 @@ public class SessionManager {
      */
     public Object getSession(HttpServletRequest request){
 
-        Cookie sessionCookie = findCookie(request, SESSION_COOKIE_NAME);
+        Cookie sessionCookie = findCookie(request);
         if (sessionCookie == null){
             return null;
         }
@@ -47,15 +47,15 @@ public class SessionManager {
      * 세션 만료
      */
     public void expire(HttpServletRequest request){
-        Cookie sessionCookie = findCookie(request, SESSION_COOKIE_NAME);
+        Cookie sessionCookie = findCookie(request);
         if (sessionCookie != null){
             sessionStore.remove(sessionCookie.getValue());
         }
     }
 
-    private Cookie findCookie(HttpServletRequest request, String cookieName) {
+    private Cookie findCookie(HttpServletRequest request) {
         return Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals(cookieName))
+                .filter(cookie -> cookie.getName().equals(SessionManager.SESSION_COOKIE_NAME))
                 .findAny()
                 .orElse(null);
     }

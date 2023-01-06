@@ -12,16 +12,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class AssignmentService {
 
-    private AssignmentRepository assignmentRepository;
-    private AssignmentSubmitRepository assignmentSubmitRepository;
-    private AttachmentFileService attachmentFileService;
+    private final AssignmentRepository assignmentRepository;
+    private final AssignmentSubmitRepository assignmentSubmitRepository;
+    private final AttachmentFileService attachmentFileService;
+
+    private static final String FLAG_ASSIGNMENT = "assignment";
+    private static final String FLAG_SUBMIT = "submit";
 
     @Autowired
     public AssignmentService(AssignmentRepository assignmentRepository,
@@ -33,13 +35,13 @@ public class AssignmentService {
     }
 
     public Assignment findById(Long id){
-        Optional<Assignment> assignment = null;
-        return (assignment = assignmentRepository.findById(id)).isEmpty() ? null : assignment.get();
+        Optional<Assignment> assignment = assignmentRepository.findById(id);
+        return assignment.isEmpty() ? null : assignment.get();
     }
 
     public AssignmentSubmit findSubmitById(Long id){
-        Optional<AssignmentSubmit> assignmentSubmit = null;
-        return (assignmentSubmit = assignmentSubmitRepository.findById(id)).isEmpty() ? null : assignmentSubmit.get();
+        Optional<AssignmentSubmit> assignmentSubmit = assignmentSubmitRepository.findById(id);
+        return assignmentSubmit.isEmpty() ? null : assignmentSubmit.get();
     }
 
     public List<AssignmentSubmit> findAllSubmitByAssignId(Long assignId){
@@ -47,16 +49,16 @@ public class AssignmentService {
     }
 
     public List<AttachmentFile> findAttachmentFileByAssignId(Long assignId){
-        return attachmentFileService.getAttachmentFiles("assignment", assignId);
+        return attachmentFileService.getAttachmentFiles(FLAG_ASSIGNMENT, assignId);
     }
 
     public List<AttachmentFile> findAttachmentFileBySubmit(AssignmentSubmit assignmentSubmit){
-        return attachmentFileService.getAttachmentFiles("submit", assignmentSubmit.getId());
+        return attachmentFileService.getAttachmentFiles(FLAG_SUBMIT, assignmentSubmit.getId());
     }
 
     public AssignmentSubmit findSubmitByAssignIdAndCreateBy(Long assignId, String createBy){
-        Optional<AssignmentSubmit> assignmentSubmit = null;
-        return (assignmentSubmit = assignmentSubmitRepository.findByAssignIdAndCreateBy(assignId, createBy)).isEmpty() ? null : assignmentSubmit.get();
+        Optional<AssignmentSubmit> assignmentSubmit = assignmentSubmitRepository.findByAssignIdAndCreateBy(assignId, createBy);
+        return assignmentSubmit.isEmpty() ? null : assignmentSubmit.get();
     }
 
     public List<Assignment> findAll(){
@@ -72,13 +74,13 @@ public class AssignmentService {
             List<AttachmentFile> saveSuccessFiles = new ArrayList<>();
             for(MultipartFile file : dto.getFiles()){
                 //파일 저장
-                AttachmentFile saved = attachmentFileService.saveAttachmentFile(file, "assignment", assignment.getId());
+                AttachmentFile saved = attachmentFileService.saveAttachmentFile(file, FLAG_ASSIGNMENT, assignment.getId());
                 if(saved == null){
                     //저장 실패 시 이미 저장된 파일들 삭제
                     for(AttachmentFile saveSuccessFile : saveSuccessFiles)
                         attachmentFileService.deleteAttachment(saveSuccessFile.getId());
                     return null;
-                }
+                } else saveSuccessFiles.add(saved);
             }
         }
         return assignment;
@@ -89,12 +91,12 @@ public class AssignmentService {
         if(assignment.isEmpty()) return;
         List<AssignmentSubmit> submits = assignmentSubmitRepository.findByAssignId(id);
         for(AssignmentSubmit submit : submits){
-            List<AttachmentFile> files = attachmentFileService.getAttachmentFiles("submit", submit.getId());
+            List<AttachmentFile> files = attachmentFileService.getAttachmentFiles(FLAG_SUBMIT, submit.getId());
             for(AttachmentFile file : files)
                 attachmentFileService.deleteAttachment(file.getId());
             assignmentSubmitRepository.delete(submit);
         }
-        List<AttachmentFile> files = attachmentFileService.getAttachmentFiles("assignment", id);
+        List<AttachmentFile> files = attachmentFileService.getAttachmentFiles(FLAG_ASSIGNMENT, id);
         for(AttachmentFile file : files)
             attachmentFileService.deleteAttachment(file.getId());
         assignmentRepository.delete(assignment.get());
@@ -105,8 +107,8 @@ public class AssignmentService {
         if(assignmentOptional.isEmpty()) return null;
         AssignmentSubmit assignmentSubmit = findSubmitByAssignIdAndCreateBy(dto.getAssignId(), dto.getCreateBy());
         if(assignmentSubmit != null){
-            if(force) {
-                List<AttachmentFile> files = attachmentFileService.getAttachmentFiles("submit", assignmentSubmit.getId());
+            if(Boolean.TRUE.equals(force)) {
+                List<AttachmentFile> files = attachmentFileService.getAttachmentFiles(FLAG_SUBMIT, assignmentSubmit.getId());
                 for(AttachmentFile file : files)
                     attachmentFileService.deleteAttachment(file.getId());
                 assignmentSubmitRepository.delete(assignmentSubmit);
@@ -116,7 +118,7 @@ public class AssignmentService {
         assignmentSubmit = new AssignmentSubmit(dto);
         assignmentSubmitRepository.save(assignmentSubmit);
         if(dto.getFile() != null)
-            attachmentFileService.saveAttachmentFile(dto.getFile(), "submit", assignmentSubmit.getId());
+            attachmentFileService.saveAttachmentFile(dto.getFile(), FLAG_SUBMIT, assignmentSubmit.getId());
         return assignmentSubmit;
     }
 
@@ -127,18 +129,18 @@ public class AssignmentService {
         if(dto.getFiles() != null) { //추가된 첨부파일이 있을 시 저장
             List<AttachmentFile> savedFiles = new ArrayList<>();
             for (MultipartFile file : dto.getFiles()) {
-                AttachmentFile saved = attachmentFileService.saveAttachmentFile(file, "assignment", id);
+                AttachmentFile saved = attachmentFileService.saveAttachmentFile(file, FLAG_ASSIGNMENT, id);
                 if(saved == null){
                     for(AttachmentFile f : savedFiles)
                         attachmentFileService.deleteAttachment(f.getId());
                     return null;
-                }
+                } else savedFiles.add(saved);
             }
         }
         //기존 파일들과 대조하여 idList에 없는 파일은 영구 삭제 처리
-        List<AttachmentFile> attachmentFiles = attachmentFileService.getAttachmentFiles("assignment", id);
+        List<AttachmentFile> attachmentFiles = attachmentFileService.getAttachmentFiles(FLAG_ASSIGNMENT, id);
         for(AttachmentFile file : attachmentFiles)
-            if(!attachmentFileService.isContainedAttachmentFile(idList, file))
+            if(attachmentFileService.isContainedAttachmentFile(idList, file))
                 attachmentFileService.deleteAttachment(file.getId());
         if(dto.getContext() != null && !dto.getContext().equals(assignment.getContext()))
             assignment.setTitle(dto.getTitle());

@@ -24,8 +24,8 @@ import java.util.UUID;
 @Service
 public class AttachmentFileService {
 
-    private AttachmentFileRepository attachmentFileRepository;
-    private StorageProperties storageProperties;
+    private final AttachmentFileRepository attachmentFileRepository;
+    private final StorageProperties storageProperties;
 
     @Autowired
     public AttachmentFileService(AttachmentFileRepository attachmentFileRepository,
@@ -96,6 +96,6 @@ public class AttachmentFileService {
     public boolean isContainedAttachmentFile(String[] idList, AttachmentFile file){
         return Arrays.stream(idList)
                 .filter(stringId -> Integer.parseInt(stringId) == file.getId())
-                .findAny().isPresent();
+                .findAny().isEmpty();
     }
 }
