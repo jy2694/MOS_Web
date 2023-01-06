@@ -3,7 +3,6 @@ package kr.mos1981.mosweb.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import kr.mos1981.mosweb.entity.*;
 import kr.mos1981.mosweb.service.*;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
