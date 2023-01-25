@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 public class LoginController {
@@ -25,8 +27,9 @@ public class LoginController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<Object> processSignIn(HttpServletResponse response, SignInDTO dto) throws IOException {
-        String[] data = WKUAPI.getRegistrationInformation(dto);
+    public ResponseEntity<Object> processSignIn(HttpServletResponse response, @RequestBody Map<String, Object> map) throws IOException {
+      System.out.println(map.get("userId") + " && " + map.get("userPw"));
+        String[] data = WKUAPI.getRegistrationInformation(new SignInDTO(map.get("userId").toString(), map.get("userPw").toString()));
         if(data[0] == null){
             return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("ERROR : 회원정보가 일치하지 않습니다.");
         }
