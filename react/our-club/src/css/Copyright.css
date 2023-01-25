@@ -1,0 +1,7 @@
+.copyright{
+    height: 5vh;
+    top: 95%;
+    width: 100%;
+    text-align: center;
+    font-weight: var(--weight-bold);
+  }
