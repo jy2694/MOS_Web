@@ -24,7 +24,7 @@ public class MainController {
         this.memberService = memberService;
     }
 
-    @GetMapping("/")
+    @GetMapping("/userdata")
     public ResponseEntity<Object> getPersonalInformation(HttpServletRequest request){
         String[] data = (String[]) sessionManager.getSession(request);
         if(data == null)

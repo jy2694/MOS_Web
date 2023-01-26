@@ -10,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 public class LoginController {
@@ -29,9 +31,9 @@ public class LoginController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<Object> processSignIn(HttpServletResponse response,HttpServletRequest request, SignInDTO dto) throws IOException {
+    public ResponseEntity<Object> processSignIn(HttpServletResponse response, HttpServletRequest request, @RequestBody Map<String, Object> map) throws IOException {
         if(sessionManager.getSession(request) != null) return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("ERROR : 이미 로그인 상태입니다.");
-        String[] data = WKUAPI.getRegistrationInformation(dto);
+        String[] data = WKUAPI.getRegistrationInformation(new SignInDTO(map.get("userId").toString(), map.get("userPw").toString()));
         if(data[0] == null) return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("ERROR : 회원정보가 일치하지 않습니다.");
         int permission = memberService.getPermissionLevel(data[0], data[2]);
         if(permission == 2) return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("ERROR : MOS 회원이 아닙니다.");
