@@ -1,0 +1,26 @@
+
+o
+java:S2293C"YReplace the type specification in this constructor call with the diamond operator ("<>").(® ¿ü
+]
+java:S1192="GDefine a constant instead of duplicating this literal "EUC-KR" 3 times.(¥‚ž×
+f	java:S117U"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¹´Ö™
+2
+java:S1643]"Use a StringBuilder instead.(çàœ©
+U
+java:S1118":Add a private constructor to hide the implicit public one.(ûÁÊÕøÿÿÿÿ
+Y
+java:S1854Q">Remove this useless assignment to local variable "connection".(¤èèóüÿÿÿÿ
+R
+java:S1854P"7Remove this useless assignment to local variable "obj".(Ò§àîþÿÿÿÿ
+Y
+java:S1854L">Remove this useless assignment to local variable "connection".(¤èèóüÿÿÿÿ
+M
+java:S1854K"7Remove this useless assignment to local variable "obj".(é«êþ
+V
+java:S1854A"ARemove this useless assignment to local variable "postDataBytes".(ðžÙJ
+G
+java:S1481A"2Remove this unused "postDataBytes" local variable.(ðžÙJ
+>
+java:S1481K"(Remove this unused "obj" local variable.(é«êþ
+J
+java:S2864\"4Iterate over the "entrySet" instead of the "keySet".(Ä¼÷®

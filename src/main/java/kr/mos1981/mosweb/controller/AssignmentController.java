@@ -31,7 +31,9 @@ public class AssignmentController {
     }
 
     @GetMapping("/assignment")
-    public ResponseEntity<Object> getAssignment(@RequestParam(required = false) Long id){
+    public ResponseEntity<Object> getAssignment(HttpServletRequest request, @RequestParam(required = false) Long id){
+        String[] data = (String[]) sessionManager.getSession(request);
+        if(data == null) return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("ERROR : 로그인이 필요합니다.");
         if(id == null) return ResponseEntity.ok().body(assignmentService.findAll());
         Assignment assignment = assignmentService.findById(id);
         if(assignment == null) return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 과제가 존재하지 않습니다.");

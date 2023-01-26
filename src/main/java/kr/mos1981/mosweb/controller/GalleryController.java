@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 
@@ -50,7 +51,7 @@ public class GalleryController {
         GalleryArticle article = galleryArticleService.findById(id);
         if(article == null) return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 게시글이 존재하지 않습니다.");
         if(!article.getCreateBy().equals(data[2] + "(" + data[0] + ")")
-            && memberService.getPermissionLevel(data[0], data[1]) != 0)
+            && memberService.getPermissionLevel(data[0], data[2]) != 0)
             return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("ERROR : 권한이 없습니다.");
         article = galleryArticleService.modifyArticle(dto, id, idList);
         if(article == null) return ResponseEntity.internalServerError().body("ERROR : 파일 업로드 중 오류가 발생하였습니다.");
@@ -58,9 +59,13 @@ public class GalleryController {
     }
 
     @PostMapping("/gallery")
-    public ResponseEntity<Object> writeGalleryArticle(HttpServletRequest request, WriteArticleDTO dto){
+    public ResponseEntity<Object> writeGalleryArticle(HttpServletRequest request,
+                                                      @RequestParam String title,
+                                                      @RequestParam String context,
+                                                      @RequestParam(required = false) MultipartFile[] files){
         String[] data = (String[]) sessionManager.getSession(request);
         if(data == null) return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("ERROR : 로그인이 필요합니다.");
+        WriteArticleDTO dto = new WriteArticleDTO(title, context, null, files);
         dto.setCreateBy(data[2] + "(" + data[0] + ")");
         GalleryArticle article = galleryArticleService.createArticle(dto);
         if(article == null) return ResponseEntity.internalServerError().body("ERROR : 파일 업로드 중 오류가 발생하였습니다.");
@@ -74,7 +79,7 @@ public class GalleryController {
         GalleryArticle article = galleryArticleService.findById(id);
         if(article == null) return ResponseEntity.status(HttpStatusCode.valueOf(410)).body("ERROR : 게시글이 존재하지 않습니다.");
         if(!article.getCreateBy().equals(data[2] + "(" + data[0] + ")")
-                && memberService.getPermissionLevel(data[0], data[1]) != 0)
+                && memberService.getPermissionLevel(data[0], data[2]) != 0)
             return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("ERROR : 권한이 없습니다.");
         galleryArticleService.deleteArticle(id);
         return ResponseEntity.noContent().build();

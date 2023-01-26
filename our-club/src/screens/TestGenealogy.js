@@ -6,7 +6,7 @@ import Article from '../component/Article';
 function TestGenealogy(){
     return (
         <>
-            <Article category="족보"/>
+            <Article category="pasttest"/>
         </>
       )
 }

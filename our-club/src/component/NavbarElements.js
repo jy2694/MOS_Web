@@ -37,7 +37,7 @@ function Nb(props) {
                             <Nav.Link href="">갤러리</Nav.Link>
                             <Nav.Link href="Seminar">세미나</Nav.Link>
                             <Nav.Link href="ExecutionDetails">집행 내역</Nav.Link>
-                            <Nav.Link href="TestGenealogy"> 족보</Nav.Link>
+                            {props.name && <Nav.Link href="TestGenealogy"> 족보</Nav.Link>}
                         </Nav>
                         <Nav>
                             {!props.name && <SignIn />}

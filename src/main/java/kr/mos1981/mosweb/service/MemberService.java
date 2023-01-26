@@ -1,21 +1,24 @@
 package kr.mos1981.mosweb.service;
 
+import kr.mos1981.mosweb.entity.GalleryArticle;
 import kr.mos1981.mosweb.entity.Member;
 import kr.mos1981.mosweb.repository.MemberRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class MemberService {
 
-    private MemberRepository memberRepository;
-
-    @Autowired
-    public MemberService(MemberRepository memberRepository){
-        this.memberRepository = memberRepository;
-    }
+    private final MemberRepository memberRepository;
+    private final AssignmentService assignmentService;
+    private final GalleryArticleService galleryArticleService;
+    private final NoticeArticleService noticeArticleService;
+    private final PastTestArticleService pastTestArticleService;
+    private final UsageArticleService usageArticleService;
 
 
     /*
@@ -30,6 +33,24 @@ public class MemberService {
         if(!memberOptional.get().getName().equals(name)) return 2;
         if(!memberOptional.get().getAdministrator()) return 1;
         return 0;
+    }
+
+    public boolean hasPermission(String category, Long id, String studentId, String name){
+        switch(category){
+            case "notice" -> {
+                return noticeArticleService.findById(id).getCreateBy().equalsIgnoreCase(name+"("+studentId+")");
+            }
+            case "gallery" -> {
+                return galleryArticleService.findById(id).getCreateBy().equalsIgnoreCase(name+"("+studentId+")");
+            }
+            case "usage" -> {
+                return usageArticleService.findById(id).getCreateBy().equalsIgnoreCase(name+"("+studentId+")");
+            }
+            case "pasttest" -> {
+                return pastTestArticleService.findById(id).getCreateBy().equalsIgnoreCase(name+"("+studentId+")");
+            }
+        }
+        return false;
     }
 
     public Member findById(String studentId){

@@ -9,7 +9,7 @@ import "../css/Seminar.css";
 
 function Smn() {
     return (
-       <Article category="세미나"/>
+       <Article category="assignment"/>
     );
 }
 

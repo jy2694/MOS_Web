@@ -29,9 +29,7 @@ function App() {
           studentMajor: response.data[4]
         });
       })
-      .catch(function (error) {
-        console.log(error);
-      })
+      .catch((error) => { })
   }, []);
 
   return (

@@ -1,9 +1,4 @@
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Table from 'react-bootstrap/Table';
 import "../css/Main.css";
-import Carousel from 'react-bootstrap/Carousel';
 import image from "../img/backGround.jpg";
 
 function Grid() {
@@ -14,12 +9,10 @@ function Grid() {
       backgroundSize: 'cover'
     }} className="d-flex justify-content-center align-items-center">
 
-      <h1 className='text-center'>Computer ・ Software Engineering
-        <br />
-        41th MOS
+      <div className='text-center bg-white bg-opacity-25 p-5'>
+        <h1>Computer ・ Software Engineering<br />42th MOS</h1>
         <h5>Make Our Software. Since 1981.</h5>
-      </h1>
-
+      </div>
     </div>
 
 

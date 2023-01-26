@@ -3,7 +3,7 @@ import Article from '../component/Article';
 
 function Notice (){
   return (
-    <Article category="공지사항"/>
+    <Article category="notice" page={1}/>
   )
 }
 

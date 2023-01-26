@@ -1,0 +1,11 @@
+
+{
+java:S11927"`Define a constant instead of duplicating this literal "ERROR : ê¶Œí•œì´ ì—†ìŠµë‹ˆë‹¤." 4 times.(ãüôİúÿÿÿÿ
+†
+java:S1192,"pDefine a constant instead of duplicating this literal "ERROR : ê²Œì‹œê¸€ì´ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤." 3 times.(ˆ±Öî
+|
+java:S1192)"fDefine a constant instead of duplicating this literal "ERROR : ë¡œê·¸ì¸ì´ í•„ìš”í•©ë‹ˆë‹¤." 4 times.(â´Ú
+–
+java:S2681P"{This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.(ĞˆİÖøÿÿÿÿ
+7
+java:S1116P"Remove this empty statement.(ĞˆİÖøÿÿÿÿ

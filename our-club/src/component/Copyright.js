@@ -2,7 +2,7 @@ import React from 'react'
 import "../css/Copyright.css"
 function Copyright() {
     return (
-        <div className='d-flex align-items-center justify-content-center w-100'
+        <div className='d-flex align-items-center justify-content-center w-100 bg-white bg-opacity-25'
 
             style={{
                 height: 10 + 'vh',

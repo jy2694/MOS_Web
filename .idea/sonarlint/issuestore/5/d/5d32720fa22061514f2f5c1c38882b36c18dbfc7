@@ -1,0 +1,10 @@
+
+h
+java:S2259("FA "NullPointerException" could be thrown; "fileName" is nullable here.(“ΝΏήÿÿÿÿÿ8‹υιή0
+e
+java:S5361)"HReplace this call to "replaceAll()" by a call to the "replace()" method.( ¬β8ηυιή0
+W	java:S899I";Do something with the "boolean" value returned by "delete".(ÿΗƒ8… υιή0
+k
+java:S4042I"NUse "java.nio.file.Files#delete" here for better messages on error conditions.(ÿΗƒ8† υιή0
+c
+java:S4034b"FReplace this "filter().findAny().isPresent()" chain with "anyMatch()".(‚Ϊγ8± υιή0
